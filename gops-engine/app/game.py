@@ -108,4 +108,3 @@ Player 1:
     Score: {self.scores[1]}
     Remaining Bids: {self.available_bids[1]}
 """
-
