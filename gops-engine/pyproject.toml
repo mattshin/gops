@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "gops-engine"
+version = "0.1.0"
+description = "Server for running \"GOPS\" games"
+authors = ["Matthew Shin <matthewshin2@gmail.com>"]
+readme = "README.md"
+packages = [{include = "gops_engine"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.94.1"
+uvicorn = {extras = ["standard"], version = "^0.21.1"}
+websockets = "^11.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
