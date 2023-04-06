@@ -28,23 +28,28 @@ async def play(websocket: WebSocket, game_id):
     player_id = active_game.get_next_player_id(game_id)
     await manager.broadcast(game_id, f"info: player {player_id} connected")
     await manager.wait_for_connections(game_id)
-    await manager.broadcast(game_id, "info: all players conencted")
+    await websocket.send_text("info: all players conencted")
     try:
-
-        await manager.wait_for_connections(game_id)
-        await manager.broadcast(game_id, "info: all players conencted")
-        await websocket.send_json(active_game.get_state(player_id))
         while True:
             if not active_game.live:
                 await manager.wait_for_connections(game_id)
 
+            await websocket.send_json(active_game.get_state(player_id))
             data = await websocket.receive_text()
+            try:
+                print(f"got bid of {int(data)} from {player_id=}")
+            except ValueError:
+                print(f"did not receive int from {player_id=}")
+                continue
 
-            if active_game.queue_bid(player_id, int(data)):
+            round_end = active_game.queue_bid(player_id, int(data))
+            await manager.open_lock(game_id, player_id)
+
+            if round_end:
                 active_game.get_bounty()
                 await manager.broadcast(
-                    game_id, active_game.last_round_details()
-                )
+                    game_id, f"info: {active_game.last_round_details()}"
+                    )
     except WebSocketDisconnect:
         manager.disconnect(game_id, websocket)
         active_game.remove_player(player_id)

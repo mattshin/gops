@@ -38,12 +38,13 @@ class GameState:
 
     def get_state(self, player: int = 0):
         return {
-            "bounties": self.available_bounties,
+            "active_bounty": self._active_bounty,
+            "all_bounties": self.available_bounties,
             "tie_bounty": self.tie,
             "my_score": self.scores[player],
             "my_bids": self.available_bids[player],
             "their_score": self.scores[1 - player],
-            "their_bids": self.available[1 - player],
+            "their_bids": self.available_bids[1 - player],
         }
 
     def get_bounty(self) -> int:

@@ -9,6 +9,7 @@ CONNECTION_MAX_GROUP_SIZE = 2
 class ConnectionManager:
     def __init__(self):
         self.active_connections: dict = defaultdict(list)
+        self.locks = defaultdict(set)
 
     async def connect(self, group_id: str, websocket: WebSocket):
         await websocket.accept()
@@ -38,3 +39,14 @@ class ConnectionManager:
         while len(self.active_connections[group_id]) < num_connections:
             await asyncio.sleep(1)
         return
+
+    async def open_lock(self, lock_id, connection_id, num_connections=CONNECTION_MAX_GROUP_SIZE):
+        num_connections = max(num_connections, CONNECTION_MAX_GROUP_SIZE)
+        if connection_id not in range(num_connections):
+            raise RuntimeError(f"{connection_id=} too high")
+
+        self.locks[lock_id].add(connection_id)
+        while len(self.locks[lock_id]) < num_connections:
+            await asyncio.sleep(1)
+
+        return True
