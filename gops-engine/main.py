@@ -8,7 +8,7 @@ from app.connection_manager import ConnectionManager
 from app.game import GameState
 
 app = FastAPI()
-app.mount('/ui', StaticFiles(directory='ui',html=True))
+app.mount('/ui', StaticFiles(directory='ui', html=True))
 
 manager = ConnectionManager()
 games = defaultdict(GameState)
