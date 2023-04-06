@@ -36,5 +36,5 @@ class ConnectionManager:
     ):
         num_connections = max(num_connections, CONNECTION_MAX_GROUP_SIZE)
         while len(self.active_connections[group_id]) < num_connections:
-            asyncio.sleep(1)
+            await asyncio.sleep(1)
         return
