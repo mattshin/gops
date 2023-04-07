@@ -12,7 +12,7 @@
         <ul id='messages'>
         </ul>
         <script>
-            var ws = new WebSocket("ws://localhost:8000/play/test_id");
+            var ws = new WebSocket("ws://localhost:8000/play/test_id?verbose=true");
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
                 var message = document.createElement('pre')

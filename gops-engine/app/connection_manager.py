@@ -6,31 +6,50 @@ from fastapi import WebSocket
 CONNECTION_MAX_GROUP_SIZE = 2
 
 
+class Connection:
+    websocket = None
+    verbose = False
+
+    def __init__(self, websocket, verbose):
+        self.websocket = websocket
+        self.verbose = verbose
+
+    async def send_message(self, msg: str, verbose_only: bool = False):
+        if not verbose_only or (verbose_only and self.verbose):
+            await self.websocket.send_json({"info": verbose_only, "msg": msg})
+
+    async def send_json(self, data, verbose_only: bool = False):
+        if not verbose_only or (verbose_only and self.verbose):
+            data["info"] = verbose_only
+            await self.websocket.send_json(data)
+
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: dict = defaultdict(list)
         self.locks = defaultdict(set)
 
-    async def connect(self, group_id: str, websocket: WebSocket):
+    async def connect(self, group_id: str, websocket: WebSocket, verbose=False):
         await websocket.accept()
         if len(self.active_connections[group_id]) >= CONNECTION_MAX_GROUP_SIZE:
             await websocket.close(
                 code=1000, reason=f"Maximum connections made for {group_id=}"
             )
-            return False
-        self.active_connections[group_id].append(websocket)
-        return True
+            return None
+        connection = Connection(websocket, verbose)
+        self.active_connections[group_id].append(connection)
+        return connection
 
-    def disconnect(self, group_id: str, websocket: WebSocket):
-        self.active_connections[group_id].remove(websocket)
+    def disconnect(self, group_id: str, connection: Connection):
+        self.active_connections[group_id].remove(connection)
 
-    async def broadcast(self, group_id: str, message: str):
+    async def broadcast(self, group_id: str, message: str, verbose_only: bool = False):
         for connection in self.active_connections[group_id]:
-            await connection.send_text(message)
+            await connection.send_message(message, verbose_only=verbose_only)
 
-    async def broadcast_json(self, group_id: str, data: dict):
+    async def broadcast_json(self, group_id: str, data: dict, verbose_only: bool = False):
         for connection in self.active_connections[group_id]:
-            await connection.send_json(data)
+            await connection.send_json(data, verbose_only=verbose_only)
 
     async def wait_for_connections(
         self, group_id, num_connections=CONNECTION_MAX_GROUP_SIZE
@@ -40,13 +59,21 @@ class ConnectionManager:
             await asyncio.sleep(1)
         return
 
-    async def open_lock(self, lock_id, connection_id, num_connections=CONNECTION_MAX_GROUP_SIZE):
+    async def open_lock(
+        self, lock_id, connection_id, num_connections=CONNECTION_MAX_GROUP_SIZE
+    ):
         num_connections = max(num_connections, CONNECTION_MAX_GROUP_SIZE)
         if connection_id not in range(num_connections):
             raise RuntimeError(f"{connection_id=} too high")
 
         self.locks[lock_id].add(connection_id)
-        while len(self.locks[lock_id]) < num_connections:
+        while lock_id in self.locks and len(self.locks[lock_id]) < num_connections:
             await asyncio.sleep(1)
 
         return True
+
+    def reset_lock(self, lock_id):
+        try:
+            del self.locks[lock_id]
+        except KeyError:
+            pass

@@ -1,5 +1,7 @@
 import random
 
+from app.exceptions import AlreadyBidError, UnavailableBidError
+
 
 class GameState:
     available_bounties = list(range(2, 15))
@@ -60,13 +62,17 @@ class GameState:
         if not all(self._active_bids):
             raise RuntimeError("Cannot process bids without both bids")
 
+        def _reset_round():
+            self._active_bounty = None
+            self._active_bids = [None, None]
+
         self.available_bounties.remove(self._active_bounty)
         for player in range(2):
             self.available_bids[player].remove(self._active_bids[player])
 
         if self._active_bids[0] == self._active_bids[1]:
             self.tie += self._active_bounty
-            self._active_bounty = None
+            _reset_round()
             self._last_round_details = {
                 "tie": True,
                 "tie_bounty": self.tie
@@ -82,17 +88,17 @@ class GameState:
                 "winning_bid": self._active_bids[winner]
             }
         self.tie = 0
-        self._active_bounty = None
-        self._active_bids = [None, None]
+        _reset_round()
 
         return winner
 
     # Returns True if bid ended auction for turn, False otherwise
     def queue_bid(self, player, bid) -> bool:
+        print(self._active_bids)
         if bid not in self.available_bids[player]:
-            return False
+            raise UnavailableBidError
         if self._active_bids[player]:  # Already bid!
-            return False
+            raise AlreadyBidError
 
         self._active_bids[player] = bid
         if all(self._active_bids):
@@ -113,7 +119,7 @@ class GameState:
                 return -1
             case diff if diff > 0:
                 return 0
-    
+
     def last_round_details(self):
         details = self._last_round_details
         if details["tie"]:
