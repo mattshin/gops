@@ -96,9 +96,9 @@ class GameState:
     def queue_bid(self, player, bid) -> bool:
         print(self._active_bids)
         if bid not in self.available_bids[player]:
-            raise UnavailableBidError
+            raise UnavailableBidError(f"bid value {bid} already used")
         if self._active_bids[player]:  # Already bid!
-            raise AlreadyBidError
+            raise AlreadyBidError(f"already placed bid of {self._active_bids[player]}")
 
         self._active_bids[player] = bid
         if all(self._active_bids):

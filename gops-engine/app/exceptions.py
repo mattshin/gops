@@ -1,6 +1,10 @@
-class UnavailableBidError(Exception):
+class GameError(Exception):
     pass
 
 
-class AlreadyBidError(Exception):
+class UnavailableBidError(GameError):
+    pass
+
+
+class AlreadyBidError(GameError):
     pass

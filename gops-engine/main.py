@@ -5,6 +5,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 
 from app.connection_manager import ConnectionManager
+from app.exceptions import GameError
 from app.game import GameState
 
 app = FastAPI()
@@ -43,7 +44,12 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
                 print(f"did not receive int from {player_id=}")
                 continue
 
-            round_end = active_game.queue_bid(player_id, int(data))
+            try:
+                round_end = active_game.queue_bid(player_id, int(data))
+            except GameError as e:
+                print(f"could not process bid due to error: {repr(e)}")
+                continue
+
             await connection.send_message("waiting for opponent's bid", verbose_only=True)
             await manager.open_lock(game_id, player_id)
             manager.reset_lock(game_id)
