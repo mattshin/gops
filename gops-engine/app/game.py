@@ -124,7 +124,9 @@ class GameState:
         details = self._last_round_details
         if details["tie"]:
             return f"last round was a tie. tie bounty is now {details['tie_bounty']}"
-        return f"player {details['winner']} won the bounty of {details['total_won']} with a bid of {details['winning_bid']}"
+        return (f"player {details['winner']} "
+                f"won the bounty of {details['total_won']} "
+                f"with a bid of {details['winning_bid']}")
 
     def deserialize(self):
         return f"""
