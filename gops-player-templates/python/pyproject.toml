@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "py-gops-player-templates"
+version = "1.0.0"
+description = "Examples for GOPS client in Python"
+authors = ["Matthew <matthewshin2@gmail.com>"]
+readme = "README.md"
+packages = [{include = "py_gops_player_templates"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+websocket-client = "^1.5.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
