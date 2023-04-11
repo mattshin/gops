@@ -38,4 +38,4 @@ For more info, refer to the README in `gops-engine`.
 # Client
 While there is a dev UI that can be used to play games, it is highly
 recommended to write one's own client that can interact with the server and play
-games. Example clients are provided in the `gops-player-templates` directory.
+games. Example clients are provided in the `gops-player-examples` directory.

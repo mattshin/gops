@@ -94,7 +94,6 @@ class GameState:
 
     # Returns True if bid ended auction for turn, False otherwise
     def queue_bid(self, player, bid) -> bool:
-        print(self._active_bids)
         if bid not in self.available_bids[player]:
             raise UnavailableBidError(f"bid value {bid} already used")
         if self._active_bids[player]:  # Already bid!

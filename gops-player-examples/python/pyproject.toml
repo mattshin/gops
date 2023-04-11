@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "py-gops-player-templates"
+name = "py-gops-players"
 version = "1.0.0"
 description = "Examples for GOPS client in Python"
 authors = ["Matthew <matthewshin2@gmail.com>"]
 readme = "README.md"
-packages = [{include = "py_gops_player_templates"}]
+packages = [{include = "py_gops_players"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
