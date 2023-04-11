@@ -7,7 +7,7 @@ server in `/gops-engine`
 
 The server provides two types of messages via websockets, informational and
 game state. All messages are JSON. The game state message model is as follows:
-```json
+```json5
 {
     "active_bounty": int,        // Bounty for current round
     "all_bounties": List[int],   // All remaining bounties, including active
