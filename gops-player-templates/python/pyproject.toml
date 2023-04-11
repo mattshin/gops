@@ -9,6 +9,7 @@ packages = [{include = "py_gops_player_templates"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 websocket-client = "^1.5.1"
+rel = "^0.4.8"
 
 
 [build-system]
