@@ -10,9 +10,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     try:
         PlayerClass = getattr(players, args.player)
+        player = PlayerClass()
 
-    except AttributeError:
+    except (AttributeError, NameError):
         print(f"couldn't find player type {args.player}")
 
-    player = PlayerClass()
     player.run()
