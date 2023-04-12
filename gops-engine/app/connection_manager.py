@@ -67,13 +67,10 @@ class ConnectionManager:
             raise RuntimeError(f"{connection_id=} too high")
 
         self.locks[lock_id].add(connection_id)
-        while lock_id in self.locks and len(self.locks[lock_id]) < num_connections:
+        while 0 < len(self.locks[lock_id]) < num_connections:
             await asyncio.sleep(1)
 
         return True
 
-    def reset_lock(self, lock_id):
-        try:
-            del self.locks[lock_id]
-        except KeyError:
-            pass
+    async def reset_lock(self, lock_id):
+        self.locks[lock_id] = set()

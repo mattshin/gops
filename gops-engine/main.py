@@ -27,6 +27,7 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
         return
 
     active_game = games[game_id]
+
     player_id = active_game.get_next_player_id(game_id)
     await manager.broadcast(game_id, f"player {player_id} connected", verbose_only=True)
     await manager.wait_for_connections(game_id)
@@ -35,8 +36,10 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
         while True:
             if not active_game.live:
                 await manager.wait_for_connections(game_id)
+            turn_id = f"{game_id}_t{active_game.turn_number()}"
 
             await connection.send_json(active_game.get_state(player_id))
+            
             data = await websocket.receive_text()
             try:
                 print(f"got bid of {int(data)} from {player_id=}")
@@ -51,8 +54,9 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
                 continue
 
             await connection.send_message("waiting for opponent's bid", verbose_only=True)
-            await manager.open_lock(game_id, player_id)
-            manager.reset_lock(game_id)
+            
+            await manager.open_lock(turn_id, player_id)
+            await manager.reset_lock(turn_id)
             await connection.send_message("received opponent's bid", verbose_only=True)
 
             if round_end:
@@ -60,6 +64,13 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
                 await manager.broadcast(
                     game_id, active_game.last_round_details(), verbose_only=True
                     )
+                print(active_game.deserialize())
+            
+            if active_game.game_over():
+                print(f"game over! player {active_game.winner()} won")
+                manager.disconnect(game_id, connection)
+                return
+                
 
     except WebSocketDisconnect:
         manager.disconnect(game_id, connection)

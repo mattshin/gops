@@ -17,6 +17,7 @@ class GameState:
 
     def __init__(self):
         self._active_bounty = random.choice(self.available_bounties)
+        print(self.deserialize())
 
     def _is_live(self):
         return not len(self._players_available) and not self.game_over()
@@ -106,8 +107,12 @@ class GameState:
 
         return False
 
+    def turn_number(self) -> int:
+        if not self._is_live():
+            return -1
+        return 14 - len(self.available_bounties)
+
     def game_over(self) -> bool:
-        self.live = False
         return not bool(len(self.available_bounties))
 
     def winner(self) -> int:
