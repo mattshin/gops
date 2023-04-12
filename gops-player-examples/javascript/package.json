@@ -1,0 +1,11 @@
+{
+  "name": "js-player-examples",
+  "version": "1.0.0",
+  "description": "Examples for GOPS client in Javascript",
+  "main": "run_player.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Shin <matthewshin2@gmail.com>",
+  "license": "ISC"
+}
