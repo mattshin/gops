@@ -51,4 +51,16 @@ The `calculate_bid` function takes the above game state as
 
 ## Javascript
 
-Coming soon :)
+### quickstart
+```
+$ npm install
+$ npm install --global pm2 # Optional
+
+$ npx pm2 start run_player.js
+```
+
+### Writing a new player
+
+To write a new player, create a new `.js` file that imports the `GopsPlayer`
+class from `players/player.js` and pass to the constructor a function that
+accepts the game state as described above and returns a bid.
