@@ -2,6 +2,16 @@
 <html>
     <head>
         <title>GOPS</title>
+        <style>
+            ul.scrollable {
+                margin-top: 20px;
+                padding: 10px;
+                max-height: 30rem;
+                overflow-y: auto;
+                text-align: justify
+            }
+        </style>
+        <link id="favicon" rel="icon" type="image/x-icon" href="favicon.ico">
     </head>
     <body>
         <h1>GOPS Engine Dev UI</h1>
@@ -9,7 +19,7 @@
             <input type="text" id="messageText" autocomplete="off"/>
             <button>Send</button>
         </form>
-        <ul id='messages'>
+        <ul id="messages" class="scrollable">
         </ul>
         <script>
             var ws = new WebSocket("ws://localhost:8000/play/test_id?verbose=true");
@@ -19,6 +29,8 @@
                 var content = document.createTextNode(event.data)
                 message.appendChild(content)
                 messages.appendChild(message)
+
+                messages.scrollTop = messages.scrollHeight
             };
             function sendMessage(event) {
                 var input = document.getElementById("messageText")
