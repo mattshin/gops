@@ -68,7 +68,7 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
                 print(active_game.deserialize())
             
             if active_game.game_over():
-                manager.broadcast(f"game over! player {active_game.winner()} won")
+                manager.broadcast(game_id, f"game over! player {active_game.winner()} won", verbose_only=True)
                 manager.disconnect_all(game_id, reason=f"Game over, won by player {active_game.winner()}")
                 return
                 
