@@ -30,6 +30,7 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
 
     player_id = active_game.get_next_player_id(game_id)
     await manager.broadcast(game_id, f"player {player_id} connected", verbose_only=True)
+    await connection.send_message(f"you are player {player_id}", verbose_only=True)
     await manager.wait_for_connections(game_id)
     await connection.send_message("all players conencted", verbose_only=True)
     try:
@@ -67,15 +68,15 @@ async def play(websocket: WebSocket, game_id: str, verbose: bool = False):
                 print(active_game.deserialize())
             
             if active_game.game_over():
-                print(f"game over! player {active_game.winner()} won")
-                manager.disconnect(game_id, connection)
+                manager.broadcast(f"game over! player {active_game.winner()} won")
+                manager.disconnect_all(game_id, reason=f"Game over, won by player {active_game.winner()}")
                 return
                 
 
     except WebSocketDisconnect:
         manager.disconnect(game_id, connection)
         active_game.remove_player(player_id)
-        await manager.broadcast(game_id, f"info: player {player_id} left", verbose_only=True)
+        await manager.broadcast(game_id, f"player {player_id} left", verbose_only=True)
 
 
 if __name__ == "__main__":

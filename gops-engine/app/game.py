@@ -73,11 +73,12 @@ class GameState:
 
         if self._active_bids[0] == self._active_bids[1]:
             self.tie += self._active_bounty
-            _reset_round()
             self._last_round_details = {
                 "tie": True,
+                "bid": self._active_bids[0],
                 "tie_bounty": self.tie
             }
+            _reset_round()
             return -1
 
         winner = 0 if self._active_bids[0] > self._active_bids[1] else 1
@@ -86,7 +87,8 @@ class GameState:
                 "tie": False,
                 "winner": winner,
                 "total_won": self._active_bounty + self.tie,
-                "winning_bid": self._active_bids[winner]
+                "winning_bid": self._active_bids[winner],
+                "losing_bid": self._active_bids[1-winner]
             }
         self.tie = 0
         _reset_round()
@@ -127,10 +129,12 @@ class GameState:
     def last_round_details(self):
         details = self._last_round_details
         if details["tie"]:
-            return f"last round was a tie. tie bounty is now {details['tie_bounty']}"
+            return (f"last round was a tie, both bids were {details['bid']}. "
+                    f"tie bounty is now {details['tie_bounty']}")
         return (f"player {details['winner']} "
                 f"won the bounty of {details['total_won']} "
-                f"with a bid of {details['winning_bid']}")
+                f"with a bid of {details['winning_bid']}. " 
+                f"player {1-details['winner']}'s bid was {details['losing_bid']}")
 
     def deserialize(self):
         return f"""

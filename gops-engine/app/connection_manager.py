@@ -23,6 +23,9 @@ class Connection:
             data["info"] = verbose_only
             await self.websocket.send_json(data)
 
+    async def close(self, reason:str = "Closed by server"):
+        self.websocket.close(code=1000, reason=reason)
+
 
 class ConnectionManager:
     def __init__(self):
@@ -42,6 +45,11 @@ class ConnectionManager:
 
     def disconnect(self, group_id: str, connection: Connection):
         self.active_connections[group_id].remove(connection)
+    
+    def disconnect_all(self, group_id: str, reason="Closed by server"):
+        for connection in self.active_connections[group_id]:
+            connection.close(reason)
+        self.active_connections[group_id] = list()
 
     async def broadcast(self, group_id: str, message: str, verbose_only: bool = False):
         for connection in self.active_connections[group_id]:
