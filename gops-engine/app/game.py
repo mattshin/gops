@@ -8,6 +8,7 @@ class GameState:
     available_bids = [list(range(2, 15)), list(range(2, 15))]
     scores = [0, 0]
     tie = 0
+    move_history = list()
 
     live = False
 
@@ -41,6 +42,7 @@ class GameState:
 
     def get_state(self, player: int = 0):
         return {
+            "player_id": player,
             "active_bounty": self._active_bounty,
             "all_bounties": self.available_bounties,
             "tie_bounty": self.tie,
@@ -48,6 +50,7 @@ class GameState:
             "my_bids": self.available_bids[player],
             "their_score": self.scores[1 - player],
             "their_bids": self.available_bids[1 - player],
+            "move_history": self.move_history,
         }
 
     def get_bounty(self) -> int:
@@ -70,6 +73,8 @@ class GameState:
         self.available_bounties.remove(self._active_bounty)
         for player in range(2):
             self.available_bids[player].remove(self._active_bids[player])
+
+        self.move_history.append((self._active_bounty, self._active_bids[0], self._active_bids[1]))
 
         if self._active_bids[0] == self._active_bids[1]:
             self.tie += self._active_bounty
@@ -133,7 +138,7 @@ class GameState:
                     f"tie bounty is now {details['tie_bounty']}")
         return (f"player {details['winner']} "
                 f"won the bounty of {details['total_won']} "
-                f"with a bid of {details['winning_bid']}. " 
+                f"with a bid of {details['winning_bid']}. "
                 f"player {1-details['winner']}'s bid was {details['losing_bid']}")
 
     def deserialize(self):

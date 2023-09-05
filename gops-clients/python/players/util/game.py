@@ -11,6 +11,7 @@ def get_new_game_state():
         "my_bids": list(range(2, 15)),
         "their_score": 0,
         "their_bids": list(range(2, 15)),
+        "move_history": list(),
     }
 
     new_game_state = copy.deepcopy(INITIAL_GAME_STATE)
@@ -25,12 +26,13 @@ def get_next_game_state(game_state, my_bid, their_bid):
     new_state["all_bounties"].remove(new_state["active_bounty"])
     new_state["my_bids"].remove(my_bid)
     new_state["their_bids"].remove(their_bid)
-    
+    new_state["move_history"].append((new_state["active_bounty"], my_bid, their_bid))
+
     if my_bid == their_bid:
         new_state["tie_bounty"] += new_state["active_bounty"]
         new_state["active_bounty"] = 0
         return new_state
-    
+
     if my_bid > their_bid:
         new_state["my_score"] += new_state["active_bounty"] + new_state["tie_bounty"]
         new_state["active_bounty"] = new_state["tie_bounty"] = 0
@@ -39,7 +41,7 @@ def get_next_game_state(game_state, my_bid, their_bid):
         new_state["their_score"] += new_state["active_bounty"] + new_state["tie_bounty"]
         new_state["active_bounty"] = new_state["tie_bounty"] = 0
 
-    return new_state    
+    return new_state
 
 
 def swap_perspective(game_state):

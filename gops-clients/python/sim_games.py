@@ -71,4 +71,4 @@ if __name__ == '__main__':
         outcome = sim_game(player_one, player_two, args.verbose)
         history[outcome] += 1
 
-    print(history) 
+    print(history)
