@@ -74,7 +74,7 @@ class GameState:
         for player in range(2):
             self.available_bids[player].remove(self._active_bids[player])
 
-        self.move_history.append((self._active_bounty, self._active_bids[0], self._active_bids[1]))
+        self.move_history.append((self._active_bids[0], self._active_bids[1], self._active_bounty, self.tie))
 
         if self._active_bids[0] == self._active_bids[1]:
             self.tie += self._active_bounty

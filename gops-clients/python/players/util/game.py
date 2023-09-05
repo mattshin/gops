@@ -26,7 +26,7 @@ def get_next_game_state(game_state, my_bid, their_bid):
     new_state["all_bounties"].remove(new_state["active_bounty"])
     new_state["my_bids"].remove(my_bid)
     new_state["their_bids"].remove(their_bid)
-    new_state["move_history"].append((new_state["active_bounty"], my_bid, their_bid))
+    new_state["move_history"].append((my_bid, their_bid, new_state["active_bounty"], new_state["tie_bounty"]))
 
     if my_bid == their_bid:
         new_state["tie_bounty"] += new_state["active_bounty"]
